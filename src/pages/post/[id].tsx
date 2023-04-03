@@ -37,8 +37,6 @@ export const getStaticProps: GetStaticProps = async (context) =>{
 
   if(typeof id !== "string") throw new Error("no id");
 
-  const username = id.replace("@", "");
-
   await ssg.posts.getById.prefetch({id});
 
   return {
