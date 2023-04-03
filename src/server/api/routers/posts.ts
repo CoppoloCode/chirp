@@ -57,7 +57,7 @@ export const postsRouter = createTRPCRouter({
   }),
 
 create: privateProcedure.input(z.object({
-  content: z.string().emoji().min(1).max(280), //guarantees data is an emoji between 1 280 char
+  content: z.string().emoji("Only emojis are allowed.").min(1).max(280), //guarantees data is an emoji between 1 280 char
 })).mutation(async ({ctx, input}) => {
 
   const authorId = ctx.userId;
