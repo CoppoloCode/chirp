@@ -5,4 +5,9 @@
 
 body{
     @apply bg-black text-slate-100;
+    overscroll-behavior: none;
+}
+
+div::-webkit-scrollbar {
+    display: none;
 }
