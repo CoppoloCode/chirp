@@ -6,7 +6,7 @@ import { z } from "zod";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis} from "@upstash/redis";
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
-
+import { Post } from "@prisma/client";
 
 const addUserDataToPosts = async(posts: Post[]) =>{
 
