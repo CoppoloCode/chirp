@@ -35,7 +35,7 @@ const CreatePostWizard = () => {
 
   return (
       <div className="flex gap-3 w-full">
-        <Link href={`/@${user.username}`}><Image src={user.profileImageUrl} alt="Projile image" className="h-14 w-14 rounded-full" width={56} height={56} /></Link>
+        <Link href={`/@${user.username ?? ""}`}><Image src={user.profileImageUrl} alt="Projile image" className="h-14 w-14 rounded-full" width={56} height={56} /></Link>
         <input placeholder="Type some Emojis!" className="grow bg-transparent outline-none" type="text" value={input} 
         onChange={(e) => setInput(e.target.value)} 
         disabled={isPosting} 
