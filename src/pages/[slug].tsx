@@ -1,4 +1,4 @@
-import { type NextPage } from "next";
+import type{ NextPage , GetStaticProps} from "next";
 import Head from "next/head";
 import Image from "next/image";
 import { PageLayout } from "~/components/layout";
@@ -48,7 +48,6 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
 };
 
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
-import type { GetStaticProps } from "next";
 import SuperJSON from "superjson";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
