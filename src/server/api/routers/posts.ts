@@ -76,6 +76,16 @@ export const postsRouter = createTRPCRouter({
   }).then(addUserDataToPosts)
 ),
 
+getPostsLikedByUser: publicProcedure.input(z.object({
+  userId: z.string(),
+})).query(({ctx, input}) => ctx.prisma.post.findMany({
+  where:{
+    authorId: input.userId,
+  },
+  take: 100,
+}).then(addUserDataToPosts)
+),
+
 create: privateProcedure.input(z.object({
   content: z.string().emoji("Only emojis are allowed.").min(1).max(280).refine((v) => !/\d/.test(v)), //guarantees data is an emoji between 1 280 char
 })).mutation(async ({ctx, input}) => {

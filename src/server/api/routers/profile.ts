@@ -12,7 +12,7 @@ export const profileRouter = createTRPCRouter({
         const [user] = await clerkClient.users.getUserList({
             username: [input.username],
         });
-
+        
         if(!user){
             throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",

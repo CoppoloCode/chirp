@@ -6,7 +6,7 @@ import Image from "next/image";
 import { LoadingPage, LoadingSpinner} from "~/components/loading";
 import { useState } from "react";
 import {toast } from "react-hot-toast";
-import { PageLayout } from "~/components/layout";
+import { MainLayout, LeftLayout, RightLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
 
@@ -35,7 +35,6 @@ const CreatePostWizard = () => {
 
   return (
       <div className="flex gap-3 w-full">
-        <SignOutButton/>
         <Link href={`/@${user.username ?? ""}`}><Image src={user.profileImageUrl} alt="Projile image" className="h-14 w-14 rounded-full" width={56} height={56} /></Link>
         <input placeholder="Type some Emojis!" className="grow bg-transparent outline-none" type="text" value={input} 
         onChange={(e) => setInput(e.target.value)} 
@@ -54,11 +53,12 @@ const CreatePostWizard = () => {
 }
 
 
+
 const Feed = () => {
   const {data, isLoading: postsLoading} = api.posts.getAll.useQuery();
 
     if(postsLoading) return <LoadingPage />;
-
+    
     if(!data) return <div>Something went wrong</div>;
 
     return( <div className="flex flex-col">
@@ -66,6 +66,21 @@ const Feed = () => {
         <PostView {...fullPost} key={fullPost.post.id}/>
       ))}
       </div>);
+}
+
+const CreateProfileWizard = () =>{
+  const {user} = useUser();
+
+  if(!user) return null;
+
+  return (<div id="profile" className="flex justify-around items-center">
+            <SignOutButton />
+            <Link href={`/@${user.username ?? ""}`}>
+              <Image src={user.profileImageUrl} alt="Profile image" className="h-24 w-24 rounded-full" width={56} height={56} />
+              <h1>{`@${user.username}`}</h1>
+            </Link>
+          </div>);
+
 }
 
 const Home: NextPage = () => {
@@ -76,22 +91,34 @@ const Home: NextPage = () => {
   api.posts.getAll.useQuery();
   
   //if Userdata did not load
-  if(!userLoaded) return <div></div>
+  if(!userLoaded) return (<div></div>);
 
   
-
   return ( 
-        <PageLayout>
-          <div className="flex border-b border-slate-400 p-4">
+        <div className="flex flex-col justify-center md:flex-row">
+
+          <LeftLayout>
             {!isSignedIn && (
-              <div className="flex justify-center">
-                <SignInButton />
-              </div>)}
-            {isSignedIn && <CreatePostWizard/>}
-          </div>
-            <Feed/>
-        </PageLayout>
-        
+                <div className="flex justify-center">
+                  <SignInButton />
+                </div>)}
+            {isSignedIn && <CreateProfileWizard/>}
+          </LeftLayout>
+          <MainLayout>
+            <div className="flex border-b border-slate-400 p-4">
+              {isSignedIn && <CreatePostWizard/>}
+            </div>
+            {!isSignedIn && (
+                <div className="flex justify-center">
+                  <h1>Please Sign in to See Posts.</h1>
+                </div>)}
+            {isSignedIn && <Feed/>}
+          </MainLayout>
+
+          <RightLayout>
+
+          </RightLayout>
+        </div>
 
   );
 };

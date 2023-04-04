@@ -19,3 +19,11 @@ model Post {
 
     @@index([authorId])
 }
+
+model PostsLiked{
+
+  authorId String
+  id String @id @default(cuid())
+  
+  @@index([authorId])
+}
