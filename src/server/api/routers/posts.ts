@@ -78,7 +78,7 @@ export const postsRouter = createTRPCRouter({
 
 getPostsLikedByUser: publicProcedure.input(z.object({
   userId: z.string(),
-})).query(({ctx, input}) => ctx.prisma.post.findMany({
+})).query(({ctx, input}) => ctx.prisma.postsLiked.findMany({
   where:{
     authorId: input.userId,
   },

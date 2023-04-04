@@ -6,7 +6,9 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {faHeart as regHeart} from '@fortawesome/free-regular-svg-icons'
 import {faHeart as solidHeart} from "@fortawesome/free-solid-svg-icons";
-
+import { api } from "~/utils/api";
+import { useUser } from "@clerk/nextjs";
+import { string } from "zod";
 
 dayjs.extend(relativeTime);
 
@@ -14,6 +16,8 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 export const PostView = (props: PostWithUser) =>{
   const {post, author} = props;
+  
+
 return (
   <div key={post.id} className="flex flex-col p-4 border-b border-slate-400 gap-3">
     <div className="flex gap-3 ">
@@ -32,8 +36,18 @@ return (
       </div>
     </div>
     <div className="flex w-full justify-center">
-      <button><FontAwesomeIcon icon={regHeart} /></button>
+      <button onClick={() => likePost()}><FontAwesomeIcon icon={regHeart} /></button>
     </div>
   </div>
 )
+}
+
+const likePost = () =>{
+
+  const {user} = useUser();
+
+  if(!user) return null;
+
+  return api.posts.getPostsLikedByUser.useQuery({userId: user.id});
+  
 }
