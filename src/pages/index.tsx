@@ -55,16 +55,20 @@ const CreatePostWizard = () => {
 
 
 const Feed = () => {
-  const {data, isLoading: postsLoading} = api.posts.getAll.useQuery();
+
+  const {user} = useUser();
+  if(!user || !user.id) return null;
+  const {data: allPosts, isLoading: postsLoading} = api.posts.getAll.useQuery();
+ 
+ 
+  if(postsLoading ) return <LoadingPage />;
   
-  if(postsLoading) return <LoadingPage />;
-  
-  if(!data) return <div>Something went wrong</div>;
+  if(!allPosts) return <div>Something went wrong</div>;
  
 
   return( <div className="flex flex-col">
-    {data.map((fullPost) => (
-      <PostView {...fullPost} key={fullPost.post.id}/> 
+    {allPosts.map((fullPost) => (
+      <PostView {...fullPost} key={fullPost.post.id} /> 
     ))}
     </div>);
 }

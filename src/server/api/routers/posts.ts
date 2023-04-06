@@ -117,12 +117,10 @@ unlikePost: publicProcedure.input(z.object({
 
 getLikedPostByUserId: publicProcedure.input(z.object({
   userId: z.string(),
-  postId: z.string(),
 })).query(async ({ctx, input}) =>{ 
   const postsLiked = await ctx.prisma.postsLiked.findMany({
   where:{
     authorId: input.userId,
-    postId: input.postId,
   },
   take: 100,
 });

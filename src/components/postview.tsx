@@ -9,6 +9,9 @@ import {faHeart as solidHeart} from "@fortawesome/free-solid-svg-icons";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useUser } from "@clerk/nextjs";
+
+
 
 
 
@@ -18,20 +21,14 @@ dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
+const ButtonPanel = (props: PostWithUser ) =>{
 
-const ButtonPanel = (props: PostWithUser) =>{
-
-  let [icon, setIcon] = useState(regHeart);
+  let [heartIcon, setIcon] = useState(regHeart);
+  const {user} = useUser();
   
-  const {post} = props;
+  let likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""}).data;
+  likedPosts?.find((post) => {if(post.postId === props.post.id){heartIcon = solidHeart}});
 
-  function checkLikeStatus (icon: IconDefinition){
-    if(icon === solidHeart){
-      unlikePost({postId: post.id});
-    }else{
-      likePost({postId: post.id})
-    }
-  }
 
   const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
     onSuccess: ()=>{
@@ -50,6 +47,7 @@ const ButtonPanel = (props: PostWithUser) =>{
   const {mutate: unlikePost, isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
     onSuccess: ()=>{
       setIcon(regHeart);
+      console.log("unlikePost called")
     },
     onError: (e)=>{
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -61,8 +59,16 @@ const ButtonPanel = (props: PostWithUser) =>{
     }
   });
 
-  return (<button disabled={likeLoading || unlikeLoading} onClick={() => checkLikeStatus(icon)}><FontAwesomeIcon  icon={icon} /></button>)
+  return (<button disabled={likeLoading || unlikeLoading} onClick={() => {
+        const {post} = props;
+        if(heartIcon === solidHeart){
+          unlikePost({postId: post.id});
+        }else{
+          likePost({postId: post.id})
+        }
+      }}><FontAwesomeIcon icon={heartIcon} /></button>)
 }
+
 
 
 
