@@ -23,7 +23,7 @@ model Post {
 model PostsLiked{
 
   authorId String
-  id String @id @default(cuid())
+  postId String @id @default(cuid())
   
   @@index([authorId])
 }

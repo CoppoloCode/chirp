@@ -76,15 +76,59 @@ export const postsRouter = createTRPCRouter({
   }).then(addUserDataToPosts)
 ),
 
-getPostsLikedByUser: publicProcedure.input(z.object({
+  likePost: publicProcedure.input(z.object({
+    postId: z.string(),
+  })).mutation(async ({ctx,input})=>{
+
+    const userId = ctx.userId;
+
+    if(!userId) return null;
+
+    const post = await ctx.prisma.postsLiked.create({
+      data:{
+        authorId: userId,
+        postId: input.postId,
+      },
+    })
+
+    return post;
+
+}),
+
+unlikePost: publicProcedure.input(z.object({
+  postId: z.string(),
+})).mutation(async ({ctx,input})=>{
+
+  const userId = ctx.userId;
+
+  if(!userId) return null;
+
+  const post = await ctx.prisma.postsLiked.deleteMany({
+    where:{
+        authorId: userId,
+        postId: input.postId,
+        
+    },
+  });
+
+  return post;
+
+}),
+
+getLikedPostByUserId: publicProcedure.input(z.object({
   userId: z.string(),
-})).query(({ctx, input}) => ctx.prisma.postsLiked.findMany({
+  postId: z.string(),
+})).query(async ({ctx, input}) =>{ 
+  const postsLiked = await ctx.prisma.postsLiked.findMany({
   where:{
     authorId: input.userId,
+    postId: input.postId,
   },
   take: 100,
-}).then(addUserDataToPosts)
-),
+});
+  return postsLiked;
+}),
+
 
 create: privateProcedure.input(z.object({
   content: z.string().emoji("Only emojis are allowed.").min(1).max(280).refine((v) => !/\d/.test(v)), //guarantees data is an emoji between 1 280 char
