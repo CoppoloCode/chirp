@@ -15,16 +15,16 @@ const SinglePostPage: NextPage<{id: string}> = ({id}) => {
   if(!data) return <div>404</div>;
   
   return (
-    <>
+    <div className="flex flex-col justify-center md:flex-row">
       <Head>
         <title>{`${data.post.content} - @${data.author.username}`}</title>
       </Head>
       <LeftLayout/>
       <MainLayout>
-        <PostView {...data} />
+          <PostView {...data} />
       </MainLayout>
       <RightLayout/>
-    </>
+    </div>
   );
 };
 

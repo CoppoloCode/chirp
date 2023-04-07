@@ -62,14 +62,14 @@ const ButtonPanel = (props: PostWithUser ) =>{
     
   });
 
-  return (<button disabled={likeLoading || unlikeLoading} onClick={() => {
+  return (<button className="flex items-center gap-2" disabled={likeLoading || unlikeLoading} onClick={() => {
         const {post} = props;
         if(heartIcon === solidHeart){
           unlikePost({postId: post.id});
         }else{
           likePost({postId: post.id})
         }
-      }}><FontAwesomeIcon icon={heartIcon} />{props.post.likes}</button>)
+      }}><FontAwesomeIcon className="h-5 w-5" icon={heartIcon} />{props.post.likes}</button>)
 }
 
 

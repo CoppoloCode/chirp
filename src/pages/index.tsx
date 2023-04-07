@@ -121,7 +121,6 @@ const Home: NextPage = () => {
                 </div>)}
             {isSignedIn && <Feed/>}
           </MainLayout>
-
           <RightLayout>
 
           </RightLayout>
