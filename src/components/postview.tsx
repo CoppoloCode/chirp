@@ -15,7 +15,6 @@ import { useUser } from "@clerk/nextjs";
 
 
 
-
 dayjs.extend(relativeTime);
 
 
@@ -23,16 +22,35 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 const ButtonPanel = (props: PostWithUser ) =>{
 
-  let [heartIcon, setIcon] = useState(regHeart);
   const {user} = useUser();
+  let [heartIcon, setIcon] = useState(regHeart);
+  const ctx = api.useContext();
   
-  let likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""}).data;
-  likedPosts?.find((post) => {if(post.postId === props.post.id){heartIcon = solidHeart}});
 
+  const likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""})?.data;
+  likedPosts?.find((post: any) => { if(post.postId === props.post.id){heartIcon = solidHeart;}})
+  
+  
+ 
+  const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
+      onSuccess: ()=>{
+        setIcon(regHeart);
+        void ctx.posts.getLikedPostByUserId.invalidate();
+      },
+      onError: (e)=>{
+        const errorMessage = e.data?.zodError?.fieldErrors.content;
+        if(errorMessage && errorMessage[0]){
+          toast.error(errorMessage[0]);
+        }else{
+          toast.error("Failed to unlike post. Try again later");
+        }
+      }
+  });
 
-  const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
+ const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
     onSuccess: ()=>{
       setIcon(solidHeart);
+      void ctx.posts.getLikedPostByUserId.invalidate();
     },
     onError: (e)=>{
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -42,21 +60,7 @@ const ButtonPanel = (props: PostWithUser ) =>{
         toast.error("Failed to like post. Try again later");
       }
     }
-  });
-
-  const {mutate: unlikePost, isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
-    onSuccess: ()=>{
-      setIcon(regHeart);
-      console.log("unlikePost called")
-    },
-    onError: (e)=>{
-      const errorMessage = e.data?.zodError?.fieldErrors.content;
-      if(errorMessage && errorMessage[0]){
-        toast.error(errorMessage[0]);
-      }else{
-        toast.error("Failed to unlike post. Try again later");
-      }
-    }
+    
   });
 
   return (<button disabled={likeLoading || unlikeLoading} onClick={() => {
@@ -72,9 +76,12 @@ const ButtonPanel = (props: PostWithUser ) =>{
 
 
 
+
 export const PostView = (props: PostWithUser) =>{
 
   const {post, author} = props;
+  const {user} = useUser();
+  
  
     return (
       <div key={post.id} className="flex flex-col p-4 border-b border-slate-400 gap-3">

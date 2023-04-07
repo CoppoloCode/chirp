@@ -30,6 +30,7 @@ const addUserDataToPosts = async(posts: Post[]) =>{
         ...author,
         username: author.username,
       },
+
     };
 })}
 
@@ -76,7 +77,7 @@ export const postsRouter = createTRPCRouter({
   }).then(addUserDataToPosts)
 ),
 
-  likePost: publicProcedure.input(z.object({
+likePost: publicProcedure.input(z.object({
     postId: z.string(),
   })).mutation(async ({ctx,input})=>{
 

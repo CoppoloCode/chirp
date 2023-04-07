@@ -11,6 +11,7 @@ import { PostView } from "~/components/postview";
 import Link from "next/link";
 
 
+
 const CreatePostWizard = () => {
   const {user} = useUser();
   const [input, setInput] = useState("");
@@ -54,13 +55,14 @@ const CreatePostWizard = () => {
 
 
 
+
 const Feed = () => {
 
   const {user} = useUser();
+
   if(!user || !user.id) return null;
   const {data: allPosts, isLoading: postsLoading} = api.posts.getAll.useQuery();
- 
- 
+
   if(postsLoading ) return <LoadingPage />;
   
   if(!allPosts) return <div>Something went wrong</div>;
@@ -94,7 +96,7 @@ const Home: NextPage = () => {
 
   //start fetching asap
   api.posts.getAll.useQuery();
-  
+
   //if Userdata did not load
   if(!userLoaded) return (<div></div>);
 
