@@ -90,7 +90,16 @@ likePost: publicProcedure.input(z.object({
         authorId: userId,
         postId: input.postId,
       },
-    })
+    });
+    await ctx.prisma.post.update({
+      data:{
+       likes: {increment: 1},
+      },
+      where:{
+        id: input.postId
+      }
+    });
+
 
     return post;
 
@@ -110,6 +119,14 @@ unlikePost: publicProcedure.input(z.object({
         postId: input.postId,
         
     },
+  });
+  await ctx.prisma.post.update({
+    data:{
+     likes: {decrement: 1},
+    },
+    where:{
+      id: input.postId
+    }
   });
 
   return post;

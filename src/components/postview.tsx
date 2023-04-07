@@ -25,7 +25,6 @@ const ButtonPanel = (props: PostWithUser ) =>{
   const {user} = useUser();
   let [heartIcon, setIcon] = useState(regHeart);
   const ctx = api.useContext();
-  
 
   const likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""})?.data;
   likedPosts?.find((post: any) => { if(post.postId === props.post.id){heartIcon = solidHeart;}})
@@ -35,7 +34,7 @@ const ButtonPanel = (props: PostWithUser ) =>{
   const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
       onSuccess: ()=>{
         setIcon(regHeart);
-        void ctx.posts.getLikedPostByUserId.invalidate();
+        void ctx.posts.invalidate();
       },
       onError: (e)=>{
         const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -50,7 +49,7 @@ const ButtonPanel = (props: PostWithUser ) =>{
  const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
     onSuccess: ()=>{
       setIcon(solidHeart);
-      void ctx.posts.getLikedPostByUserId.invalidate();
+      void ctx.posts.invalidate();
     },
     onError: (e)=>{
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -70,7 +69,7 @@ const ButtonPanel = (props: PostWithUser ) =>{
         }else{
           likePost({postId: post.id})
         }
-      }}><FontAwesomeIcon icon={heartIcon} /></button>)
+      }}><FontAwesomeIcon icon={heartIcon} />{props.post.likes}</button>)
 }
 
 
