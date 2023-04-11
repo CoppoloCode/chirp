@@ -9,6 +9,7 @@ import {toast } from "react-hot-toast";
 import { MainLayout, LeftLayout, RightLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
+import { UserResource } from "@clerk/types";
 
 
 
@@ -75,18 +76,39 @@ const Feed = () => {
     </div>);
 }
 
-const CreateProfileWizard = () =>{
+export const CreateProfileWizard = () =>{
   const {user} = useUser();
 
   if(!user) return null;
 
-  return (<div id="profile" className="flex justify-around items-center">
-            <SignOutButton />
-            <Link href={`/@${user.username ?? ""}`}>
-              <Image src={user.profileImageUrl} alt="Profile image" className="h-24 w-24 rounded-full" width={56} height={56} />
-              <h1>{`@${user.username}`}</h1>
-            </Link>
+  const [isHidden, setHidden] = useState(true);
+
+  return (<div className="flex flex-col items-center gap-2">
+            <div id="profilePanel" className="flex-col border gap-2 border-white rounded-lg w-36 p-2" hidden={isHidden}>
+              <div className="flex justify-end p-1">
+                  <button onClick={()=>setHidden(!isHidden)}>X</button>
+              </div>
+              <div
+                className={`
+              bg-black pointer-events-auto flex flex-col items-center`}>
+                  <SignOutButton />
+                  <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/@${user.username}`}>Profile</Link></button>
+                
+              </div>
+            </div>
+            <button onClick={() => {setHidden(!isHidden)}}>
+              <div id="profile" className="flex items-center p-2 gap-4 bg-slate-600 bg-opacity-0 transition duration-500 ease-in-out hover:bg-opacity-50 rounded-full">
+                <div className="flex items-center gap-3">
+                  <Image src={user.profileImageUrl} alt="Profile image" className="h-12 w-12 rounded-full" width={56} height={56} />
+                  <h1>{user.username}</h1>
+                </div>
+                <div>
+                  • • •
+                </div>
+              </div>
+            </button>
           </div>);
+  
 
 }
 
@@ -103,12 +125,7 @@ const Home: NextPage = () => {
   
   return ( 
         <div className="flex flex-col justify-center md:flex-row">
-
           <LeftLayout>
-            {!isSignedIn && (
-                <div className="flex justify-center">
-                  <SignInButton />
-                </div>)}
             {isSignedIn && <CreateProfileWizard/>}
           </LeftLayout>
           <MainLayout>
@@ -116,8 +133,9 @@ const Home: NextPage = () => {
               {isSignedIn && <CreatePostWizard/>}
             </div>
             {!isSignedIn && (
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center gap-5 justify-center">
                   <h1>Please Sign in to See Posts.</h1>
+                  <SignInButton />
                 </div>)}
             {isSignedIn && <Feed/>}
           </MainLayout>

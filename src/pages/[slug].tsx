@@ -6,6 +6,9 @@ import { api } from "~/utils/api";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { LoadingPage } from "~/components/loading";
+import {CreateProfileWizard} from "~/pages/index"
+import { useUser } from "@clerk/nextjs";
+
 
 
 const ProfileFeed = (props: {userId: string}) => {
@@ -21,19 +24,25 @@ const ProfileFeed = (props: {userId: string}) => {
 
 const ProfilePage: NextPage<{username: string}> = ({username}) => {
 
+  const {isSignedIn} = useUser();
+
+  
   const {data} = api.profile.getUserByUsername.useQuery({
     username,
   });
-
-  if(!data) return <div>404</div>;
   
+  if(!data) return <div className="flex flex-col w-full h-screen justify-center items-center">404</div>;
+  
+
   return (
     <>
       <Head>
         <title>{data.username}</title>
       </Head>
       <div className="flex justify-center">
-        <LeftLayout/>
+        <LeftLayout>
+            {isSignedIn && <CreateProfileWizard/>}
+        </LeftLayout>
         <MainLayout>
           <div className="relative h-36 border-slate-400 bg-slate-600">
             <Image src={data.profileImageUrl} 

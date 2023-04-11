@@ -32,9 +32,9 @@ const ButtonPanel = (props: PostWithUser ) =>{
   
  
   const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
-      onSuccess: ()=>{
+      onSuccess: async ()=>{
         setIcon(regHeart);
-        void ctx.posts.invalidate();
+        await ctx.posts.invalidate();
       },
       onError: (e)=>{
         const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -47,9 +47,9 @@ const ButtonPanel = (props: PostWithUser ) =>{
   });
 
  const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
-    onSuccess: ()=>{
+    onSuccess: async ()=>{
       setIcon(solidHeart);
-      void ctx.posts.invalidate();
+      await ctx.posts.invalidate();
     },
     onError: (e)=>{
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -64,12 +64,13 @@ const ButtonPanel = (props: PostWithUser ) =>{
 
   return (<button className="flex items-center gap-2" disabled={likeLoading || unlikeLoading} onClick={() => {
         const {post} = props;
-        if(heartIcon === solidHeart){
+        if(heartIcon === solidHeart){ 
           unlikePost({postId: post.id});
         }else{
           likePost({postId: post.id})
         }
-      }}><FontAwesomeIcon className="h-5 w-5" icon={heartIcon} />{props.post.likes}</button>)
+      }}><FontAwesomeIcon className="h-5 w-5" icon={heartIcon} />{props.post.likes}</button>
+      )
 }
 
 

@@ -13,7 +13,7 @@ export const MainLayout = (props: PropsWithChildren) => {
 
 export const LeftLayout = (props: PropsWithChildren) => {
     return (
-            <div className="md:w-1/4 p-2">
+            <div className="flex md:w-1/4 p-2 justify-center items-end">
                  {props.children}
             </div>
         );
