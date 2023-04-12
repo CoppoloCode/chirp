@@ -30,7 +30,7 @@ const addUserDataToPosts = async(posts: Post[]) =>{
         ...author,
         username: author.username,
       },
-
+      isLiked: false,
     };
 })}
 

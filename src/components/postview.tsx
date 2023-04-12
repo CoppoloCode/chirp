@@ -12,28 +12,27 @@ import { toast } from "react-hot-toast";
 import { useUser } from "@clerk/nextjs";
 
 
-
-
-
 dayjs.extend(relativeTime);
 
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
-const ButtonPanel = (props: PostWithUser ) =>{
 
+
+export const PostView = (props: PostWithUser) =>{
+
+  const {post, author} = props;
   const {user} = useUser();
-  let [heartIcon, setIcon] = useState(regHeart);
   const ctx = api.useContext();
 
-  const likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""})?.data;
-  likedPosts?.find((post: any) => { if(post.postId === props.post.id){heartIcon = solidHeart;}})
+  let [heartIcon, setIcon] = useState(regHeart);
   
-  
- 
+  if(props.isLiked){
+    heartIcon = solidHeart;
+  }
+
   const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
       onSuccess: async ()=>{
-        setIcon(regHeart);
         await ctx.posts.invalidate();
       },
       onError: (e)=>{
@@ -46,10 +45,9 @@ const ButtonPanel = (props: PostWithUser ) =>{
       }
   });
 
- const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
+  const {mutate: likePost, isLoading: likeLoading} = api.posts.likePost.useMutation({
     onSuccess: async ()=>{
-      setIcon(solidHeart);
-      await ctx.posts.invalidate();
+        await ctx.posts.invalidate();
     },
     onError: (e)=>{
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -62,27 +60,7 @@ const ButtonPanel = (props: PostWithUser ) =>{
     
   });
 
-  return (<button className="flex items-center gap-2" disabled={likeLoading || unlikeLoading} onClick={() => {
-        const {post} = props;
-        if(heartIcon === solidHeart){ 
-          unlikePost({postId: post.id});
-        }else{
-          likePost({postId: post.id})
-        }
-      }}><FontAwesomeIcon className="h-5 w-5" icon={heartIcon} />{props.post.likes}</button>
-      )
-}
 
-
-
-
-
-export const PostView = (props: PostWithUser) =>{
-
-  const {post, author} = props;
-  const {user} = useUser();
-  
- 
     return (
       <div key={post.id} className="flex flex-col p-4 border-b border-slate-400 gap-3">
         <div className="flex gap-3 ">
@@ -101,9 +79,20 @@ export const PostView = (props: PostWithUser) =>{
           </div>
         </div>
         <div className="flex w-full justify-center">
-          <ButtonPanel {...props} key={post.id}/>
+          <button className="flex items-center gap-2" disabled={likeLoading || unlikeLoading} onClick={() => {
+          const {post} = props;
+          if(heartIcon === solidHeart){ 
+            setIcon(regHeart);
+            unlikePost({postId: post.id});
+          }else{
+            setIcon(solidHeart);
+            likePost({postId: post.id})
+          }
+        }}><FontAwesomeIcon className="h-5 w-5" icon={heartIcon} />{props.post.likes}</button>
         </div>
       </div>
     )
   
 }
+
+

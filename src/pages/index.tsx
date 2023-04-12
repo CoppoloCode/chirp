@@ -9,7 +9,7 @@ import {toast } from "react-hot-toast";
 import { MainLayout, LeftLayout, RightLayout } from "~/components/layout";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
-import { UserResource } from "@clerk/types";
+
 
 
 
@@ -61,17 +61,25 @@ const Feed = () => {
 
   const {user} = useUser();
 
+ 
+
   if(!user || !user.id) return null;
-  const {data: allPosts, isLoading: postsLoading} = api.posts.getAll.useQuery();
+  const {data: allPosts, isLoading: postsLoading} =  api.posts.getAll.useQuery();
+  const likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""})?.data;
 
   if(postsLoading ) return <LoadingPage />;
   
   if(!allPosts) return <div>Something went wrong</div>;
- 
+
+  if(likedPosts){
+    for(let i = 0; i < likedPosts?.length; i++){
+      allPosts.find((post) =>{if(post.post.id === likedPosts[i]?.postId){post.isLiked = true}})
+    }
+  }
 
   return( <div className="flex flex-col">
     {allPosts.map((fullPost) => (
-      <PostView {...fullPost} key={fullPost.post.id} /> 
+      <PostView {...fullPost}  key={fullPost.post.id} /> 
     ))}
     </div>);
 }
@@ -92,8 +100,10 @@ export const CreateProfileWizard = () =>{
                 className={`
               bg-black pointer-events-auto flex flex-col items-center`}>
                   <SignOutButton />
+                  <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/`}>Home</Link></button>
                   <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/@${user.username}`}>Profile</Link></button>
-                
+                  
+
               </div>
             </div>
             <button onClick={() => {setHidden(!isHidden)}}>

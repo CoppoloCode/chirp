@@ -4,10 +4,11 @@ import { MainLayout, RightLayout, LeftLayout } from "~/components/layout";
 import { api } from "~/utils/api";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
-
+import { useUser } from "@clerk/nextjs";
+import { CreateProfileWizard } from "..";
 
 const SinglePostPage: NextPage<{id: string}> = ({id}) => {
-
+  const {isSignedIn} = useUser();
   const {data} = api.posts.getById.useQuery({
     id,
   });
@@ -19,7 +20,9 @@ const SinglePostPage: NextPage<{id: string}> = ({id}) => {
       <Head>
         <title>{`${data.post.content} - @${data.author.username}`}</title>
       </Head>
-      <LeftLayout/>
+      <LeftLayout>
+            {isSignedIn && <CreateProfileWizard/>}
+        </LeftLayout>
       <MainLayout>
           <PostView {...data} />
       </MainLayout>
