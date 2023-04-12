@@ -12,7 +12,16 @@ import { useUser } from "@clerk/nextjs";
 
 
 const ProfileFeed = (props: {userId: string}) => {
+  
+
   const {data, isLoading} = api.posts.getPostsByUserId.useQuery({userId: props.userId})
+  const likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: props.userId ?? ""})?.data;
+
+  if(likedPosts){
+    for(let i = 0; i < likedPosts?.length; i++){
+      data?.find((post) =>{if(post.post.id === likedPosts[i]?.postId){post.isLiked = true}})
+    }
+  }
 
   if(isLoading) return <LoadingPage/>
   if(!data || data.length === 0) return <div>User has not posted.</div>
