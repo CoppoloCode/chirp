@@ -4,12 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {IconDefinition, faHeart as regHeart} from '@fortawesome/free-regular-svg-icons'
+import { faHeart as regHeart} from '@fortawesome/free-regular-svg-icons'
 import {faHeart as solidHeart} from "@fortawesome/free-solid-svg-icons";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { useUser } from "@clerk/nextjs";
+
 
 
 dayjs.extend(relativeTime);
@@ -22,15 +22,14 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 export const PostView = (props: PostWithUser) =>{
 
   const {post, author} = props;
-  const {user} = useUser();
   const ctx = api.useContext();
+  
 
   let [heartIcon, setIcon] = useState(regHeart);
-  
+
   if(props.isLiked){
     heartIcon = solidHeart;
   }
-
   const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
       onSuccess: async ()=>{
         await ctx.posts.invalidate();
