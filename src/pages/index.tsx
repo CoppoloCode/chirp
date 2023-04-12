@@ -61,8 +61,6 @@ const Feed = () => {
 
   const {user} = useUser();
 
- 
-
   if(!user || !user.id) return null;
   const {data: allPosts, isLoading: postsLoading} =  api.posts.getAll.useQuery();
   const likedPosts = api.posts.getLikedPostByUserId.useQuery({userId: user?.id ?? ""})?.data;
