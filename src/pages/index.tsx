@@ -99,7 +99,7 @@ export const CreateProfileWizard = () =>{
               bg-black pointer-events-auto flex flex-col items-center`}>
                   <SignOutButton />
                   <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/`}>Home</Link></button>
-                  <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/@${user.username}`}>Profile</Link></button>
+                  <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/@${user?.username ?? ""}`}>Profile</Link></button>
                   
 
               </div>
