@@ -6,8 +6,8 @@ import { api } from "~/utils/api";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { LoadingPage } from "~/components/loading";
-import {CreateProfileWizard} from "~/pages/index"
 import { useUser } from "@clerk/nextjs";
+
 
 
 
@@ -33,12 +33,10 @@ const ProfileFeed = (props: {userId: string}) => {
 
 const ProfilePage: NextPage<{username: string}> = ({username}) => {
 
-  const {isSignedIn} = useUser();
-
+  const userId = useUser()?.user?.id;
+  if(!userId ) return null;
   
-  const {data} = api.profile.getUserByUsername.useQuery({
-    username,
-  });
+  const {data} = api.profile.getUserByUsername.useQuery({username, userId});
   
   if(!data) return <div className="flex flex-col w-full h-screen justify-center items-center">404</div>;
   
@@ -49,9 +47,7 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
         <title>{data.username}</title>
       </Head>
       <div className="flex justify-center">
-        <LeftLayout>
-            {isSignedIn && <CreateProfileWizard/>}
-        </LeftLayout>
+        <LeftLayout/>
         <MainLayout>
           <div className="relative h-36 border-slate-400 bg-slate-600">
             <Image src={data.profileImageUrl} 
@@ -85,7 +81,7 @@ export const getStaticProps: GetStaticProps = async (context) =>{
 
   const username = slug.replace("@", "");
 
-  await ssg.profile.getUserByUsername.prefetch({username});
+  await ssg.profile.getUserByUsername.prefetch({username, userId:""});
 
   return {
     props:{

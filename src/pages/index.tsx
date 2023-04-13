@@ -33,10 +33,11 @@ const CreatePostWizard = () => {
     }
   });
 
+
   if(!user) return null;
 
   return (
-      <div className="flex gap-3 w-full">
+      <div className="flex gap-3 w-full items-center justify-center">
         <Link href={`/@${user.username ?? ""}`}><Image src={user.profileImageUrl} alt="Projile image" className="h-14 w-14 rounded-full" width={56} height={56} /></Link>
         <input placeholder="Type some Emojis!" className="grow bg-transparent outline-none" type="text" value={input} 
         onChange={(e) => setInput(e.target.value)} 
@@ -48,7 +49,7 @@ const CreatePostWizard = () => {
             }
           }
         }}/>
-        {input !== "" && !isPosting &&  (<button onClick={()=> mutate({content: input})}>Post</button>)}
+        {input !== "" && !isPosting && (<button className="flex bg-blue-600 rounded-full justify-center items-center p-2 h-8 w-12 bg-opacity-80" onClick={()=> mutate({content: input})}>Post</button>)}
         {isPosting && <div className="flex justify-center items-center"><LoadingSpinner size={20}/></div>}
       </div>
       )
@@ -82,48 +83,13 @@ const Feed = () => {
     </div>);
 }
 
-export const CreateProfileWizard = () =>{
-  const {user} = useUser();
 
-  if(!user) return null;
-
-  const [isHidden, setHidden] = useState(true);
-
-  return (<div className="flex flex-col items-center gap-2">
-            <div id="profilePanel" className="flex-col border gap-2 border-white rounded-lg w-36 p-2" hidden={isHidden}>
-              <div className="flex justify-end p-1">
-                  <button onClick={()=>setHidden(!isHidden)}>X</button>
-              </div>
-              <div
-                className={`
-              bg-black pointer-events-auto flex flex-col items-center`}>
-                  <SignOutButton />
-                  <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/`}>Home</Link></button>
-                  <button onClick={()=>setHidden(!isHidden)}><Link className="flex items-center gap-3"href={`/@${user?.username ?? ""}`}>Profile</Link></button>
-                  
-
-              </div>
-            </div>
-            <button onClick={() => {setHidden(!isHidden)}}>
-              <div id="profile" className="flex items-center p-2 gap-4 bg-slate-600 bg-opacity-0 transition duration-500 ease-in-out hover:bg-opacity-50 rounded-full">
-                <div className="flex items-center gap-3">
-                  <Image src={user.profileImageUrl} alt="Profile image" className="h-12 w-12 rounded-full" width={56} height={56} />
-                  <h1>{user.username}</h1>
-                </div>
-                <div>
-                  • • •
-                </div>
-              </div>
-            </button>
-          </div>);
-  
-
-}
 
 const Home: NextPage = () => {
   
-  const {isLoaded: userLoaded, isSignedIn} = useUser(); 
+  const {user, isLoaded: userLoaded, isSignedIn} = useUser(); 
 
+  
   //start fetching asap
   api.posts.getAll.useQuery();
 
@@ -133,9 +99,7 @@ const Home: NextPage = () => {
   
   return ( 
         <div className="flex flex-col justify-center md:flex-row">
-          <LeftLayout>
-            {isSignedIn && <CreateProfileWizard/>}
-          </LeftLayout>
+          <LeftLayout/>
           <MainLayout>
             <div className="flex border-b border-slate-400 p-4">
               {isSignedIn && <CreatePostWizard/>}
@@ -147,9 +111,7 @@ const Home: NextPage = () => {
                 </div>)}
             {isSignedIn && <Feed/>}
           </MainLayout>
-          <RightLayout>
-
-          </RightLayout>
+          <RightLayout/>
         </div>
 
   );

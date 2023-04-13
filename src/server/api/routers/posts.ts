@@ -16,9 +16,9 @@ const addUserDataToPosts = async(posts: Post[]) =>{
   })
   ).map(filterUserForClient);
 
-
   return posts.map((post) => {
     const author = users.find((user) => user.id === post.authorId);
+
     if(!author || !author.username)
      throw new TRPCError({
       code: "INTERNAL_SERVER_ERROR",
