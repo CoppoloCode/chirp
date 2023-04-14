@@ -1,9 +1,9 @@
 import type {RouterOutputs} from "~/utils/api";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart as regHeart} from '@fortawesome/free-regular-svg-icons'
 import {faHeart as solidHeart} from "@fortawesome/free-solid-svg-icons";
 import { api } from "~/utils/api";
@@ -24,7 +24,7 @@ export const PostView = (props: PostWithUser) =>{
   const {post, author} = props;
   const ctx = api.useContext();
   
-
+  let [heartColor, setColor] = useState("white");
   let [heartIcon, setIcon] = useState(regHeart);
 
   
@@ -59,8 +59,8 @@ export const PostView = (props: PostWithUser) =>{
   
   if(props.isLiked){
     heartIcon = solidHeart;
+    heartColor = "rgb(244, 114, 182)"
   }
-  
 
 
     return (
@@ -84,14 +84,15 @@ export const PostView = (props: PostWithUser) =>{
           <button className="flex items-center gap-2 hover:text-pink-500" disabled={likeLoading || unlikeLoading} onClick={() => {
           const {post} = props;
           if(heartIcon === solidHeart){ 
+            setColor("white")
             setIcon(regHeart);
             unlikePost({postId: post.id});
           }else{
+            setColor("rgb(244, 114, 182)")
             setIcon(solidHeart);
             likePost({postId: post.id})
           }
-        }}><FontAwesomeIcon className="h-8 w-8 hover:text-pink-500 hover:bg-pink-400 hover:bg-opacity-40 rounded-full p-2" icon={heartIcon} />{props.post.likes}</button>
-        </div>
+        }}><FontAwesomeIcon className="p-2 hover:bg-pink-400 hover:bg-opacity-40 rounded-full " color={heartColor} icon={heartIcon} />{props.post.likes}</button>        </div>
       </div>
     )
   
