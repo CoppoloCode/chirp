@@ -7,11 +7,10 @@ import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { LoadingPage } from "~/components/loading";
 import { useUser } from "@clerk/nextjs";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
-
-
-
+import { LeftView} from "~/components/leftview";
+import { GetFollowerProfiles } from "~/components/rightview";
 
 const ProfileFeed = (props: {userId: string}) => {
   
@@ -33,17 +32,18 @@ const ProfileFeed = (props: {userId: string}) => {
   </div>
 } 
 
-const ProfilePage: NextPage <{username: string }> = ({username}) => {
+const ProfilePage: NextPage <{userId: string }> = ({userId}) => {
 
     const {user} = useUser();
     let [isFollowing, setFollow] = useState(false);
     const ctx = api.useContext();
-    const {data, isLoading: isDataLoading} = api.profile.getUserByUsername.useQuery({username});
+    const {data, isLoading: isDataLoading} = api.profile.getUserById.useQuery({userId});
     const followData = api.posts.validateFollow.useQuery({userId: user?.id ?? "", profileId: data?.id ?? ""}).data;
 
     const {mutate: unfollow , isLoading: unfollowLoading} = api.posts.unfollow.useMutation({
       onSuccess: async ()=>{
         await ctx.posts.invalidate();
+        await ctx.profile.invalidate();
       },
       onError: (e)=>{
         const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -58,6 +58,7 @@ const ProfilePage: NextPage <{username: string }> = ({username}) => {
   const {mutate: follow, isLoading: followLoading} = api.posts.follow.useMutation({
     onSuccess: async ()=>{
         await ctx.posts.invalidate();
+        await ctx.profile.invalidate();
     },
     onError: (e)=>{
       const errorMessage = e.data?.zodError?.fieldErrors.content;
@@ -95,7 +96,9 @@ const ProfilePage: NextPage <{username: string }> = ({username}) => {
         <title>{data.username}</title>
       </Head>
       <div className="flex justify-center">
-        <LeftLayout/>
+        <LeftLayout>
+          <LeftView/>
+        </LeftLayout>
         <MainLayout>
           <div className="relative h-36 border-slate-400 bg-slate-600">
             <Image src={data.profileImageUrl} 
@@ -114,7 +117,9 @@ const ProfilePage: NextPage <{username: string }> = ({username}) => {
           <div className="w-full border-b border-slate-400"></div>
           <ProfileFeed userId={data.id}/>
         </MainLayout>
-        <RightLayout/>
+        <RightLayout>
+          <GetFollowerProfiles/>
+        </RightLayout>
       </div>
     </>
   );
@@ -130,14 +135,14 @@ export const getStaticProps: GetStaticProps = async (context) =>{
 
   if(typeof slug !== "string") throw new Error("no slug");
 
-  let username = slug.replace("@", "");
+  let userId = slug.replace("@", "");
 
-  await ssg.profile.getUserByUsername.prefetch({username: username});
+  await ssg.profile.getUserById.prefetch({userId: userId});
   
   return {
     props:{
       trpcState: ssg.dehydrate(),
-      username
+      userId
     },
   }
 

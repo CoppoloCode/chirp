@@ -1,5 +1,5 @@
 import { type NextPage } from "next";
-import { SignInButton, SignOutButton } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
 import { useUser } from "@clerk/nextjs";
 import { api } from "~/utils/api"; 
 import Image from "next/image";
@@ -7,8 +7,11 @@ import { LoadingPage, LoadingSpinner} from "~/components/loading";
 import { useState } from "react";
 import {toast } from "react-hot-toast";
 import { MainLayout, LeftLayout, RightLayout } from "~/components/layout";
+import { LeftView} from "~/components/leftview";
+import { GetFollowerProfiles } from "~/components/rightview";
 import { PostView } from "~/components/postview";
 import Link from "next/link";
+
 
 
 
@@ -38,7 +41,7 @@ const CreatePostWizard = () => {
 
   return (
       <div className="flex gap-3 w-full items-center justify-center">
-        <Link href={`/@${user.username ?? ""}`}><Image src={user.profileImageUrl} alt="Projile image" className="h-14 w-14 rounded-full" width={56} height={56} /></Link>
+        <Link href={`/@${user.id ?? ""}`}><Image src={user.profileImageUrl} alt="Projile image" className="h-14 w-14 rounded-full" width={56} height={56} /></Link>
         <input placeholder="Type some Emojis!" className="grow bg-transparent outline-none" type="text" value={input} 
         onChange={(e) => setInput(e.target.value)} 
         disabled={isPosting} 
@@ -75,14 +78,13 @@ const Feed = () => {
       allPosts.find((post) =>{if(post.post.id === likedPosts[i]?.postId){post.isLiked = true}})
     }
   }
-
+  
   return( <div className="flex flex-col">
     {allPosts.map((fullPost) => (
       <PostView {...fullPost}  key={fullPost.post.id} /> 
     ))}
     </div>);
 }
-
 
 
 const Home: NextPage = () => {
@@ -98,7 +100,9 @@ const Home: NextPage = () => {
   
   return ( 
         <div className="flex flex-col justify-center md:flex-row">
-          <LeftLayout/>
+          <LeftLayout>
+            <LeftView />
+          </LeftLayout>
           <MainLayout>
             <div className="flex border-b border-slate-400 p-4">
               {isSignedIn && <CreatePostWizard/>}
@@ -110,7 +114,9 @@ const Home: NextPage = () => {
                 </div>)}
             {isSignedIn && <Feed/>}
           </MainLayout>
-          <RightLayout/>
+          <RightLayout>
+           <GetFollowerProfiles/>
+          </RightLayout>
         </div>
 
   );

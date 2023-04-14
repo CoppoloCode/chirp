@@ -1,6 +1,8 @@
 import type{ NextPage , GetStaticProps} from "next";
 import Head from "next/head";
 import { MainLayout, RightLayout, LeftLayout } from "~/components/layout";
+import { GetFollowerProfiles } from "~/components/rightview";
+import { LeftView } from "~/components/leftview";
 import { api } from "~/utils/api";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
@@ -20,11 +22,15 @@ const SinglePostPage: NextPage<{id: string}> = ({id}) => {
       <Head>
         <title>{`${data.post.content} - @${data.author.username}`}</title>
       </Head>
-      <LeftLayout/>
+      <LeftLayout>
+          <LeftView/>
+        </LeftLayout>
       <MainLayout>
           <PostView {...data} />
       </MainLayout>
-      <RightLayout/>
+      <RightLayout>
+          <GetFollowerProfiles/>
+        </RightLayout>
     </div>
   );
 };
@@ -34,7 +40,6 @@ const SinglePostPage: NextPage<{id: string}> = ({id}) => {
 export const getStaticProps: GetStaticProps = async (context) =>{
 
   const ssg = generateSSGHelper();
- 
 
   const id = context.params?.id;
 

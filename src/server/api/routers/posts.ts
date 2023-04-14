@@ -7,7 +7,6 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis} from "@upstash/redis";
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import type { Post } from "@prisma/client";
-import { privateEncrypt } from "crypto";
 
 const addUserDataToPosts = async(posts: Post[]) =>{
 

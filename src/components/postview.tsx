@@ -70,7 +70,7 @@ export const PostView = (props: PostWithUser) =>{
           />
           <div className="flex flex-col">
             <div className="flex gap-1 text-slate-300">
-              <Link href={`/@${author.username}`}>
+              <Link href={`/@${author.id}`} key={author.id}>
                 <span>{`@${author.username}`}</span>
               </Link>
               <Link href={`/post/${post.id}`}>
@@ -81,7 +81,7 @@ export const PostView = (props: PostWithUser) =>{
           </div>
         </div>
         <div className="flex w-full justify-center">
-          <button className="flex items-center gap-2" disabled={likeLoading || unlikeLoading} onClick={() => {
+          <button className="flex items-center gap-2 hover:text-pink-500" disabled={likeLoading || unlikeLoading} onClick={() => {
           const {post} = props;
           if(heartIcon === solidHeart){ 
             setIcon(regHeart);
@@ -90,7 +90,7 @@ export const PostView = (props: PostWithUser) =>{
             setIcon(solidHeart);
             likePost({postId: post.id})
           }
-        }}><FontAwesomeIcon className="h-5 w-5" icon={heartIcon} />{props.post.likes}</button>
+        }}><FontAwesomeIcon className="h-8 w-8 hover:text-pink-500 hover:bg-pink-400 hover:bg-opacity-40 rounded-full p-2" icon={heartIcon} />{props.post.likes}</button>
         </div>
       </div>
     )
