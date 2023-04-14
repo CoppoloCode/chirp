@@ -7,6 +7,7 @@ import { Ratelimit } from "@upstash/ratelimit";
 import { Redis} from "@upstash/redis";
 import { filterUserForClient } from "~/server/helpers/filterUserForClient";
 import type { Post } from "@prisma/client";
+import { privateEncrypt } from "crypto";
 
 const addUserDataToPosts = async(posts: Post[]) =>{
 
@@ -163,6 +164,52 @@ create: privateProcedure.input(z.object({
   });
 
   return post;
+}),
+
+validateFollow: privateProcedure.input(z.object({
+  userId: z.string(),
+  profileId: z.string()
+})).query(async ({ctx, input}) =>{
+  const isFollowing = await ctx.prisma.following.findMany({
+    where: {
+      follower: input.userId,
+      followee: input.profileId,
+    },
+    take: 1,
+  })
+  return isFollowing;
+}),
+
+follow: privateProcedure.input(z.object({
+  userId: z.string(),
+  profileId: z.string(),
+})).mutation(async ({ctx, input}) =>{
+
+  const follow = await ctx.prisma.following.create({
+    data:{
+      follower: input.userId,
+      followee: input.profileId
+    }
+  })
+
+  return follow;
+
+}),
+
+unfollow: privateProcedure.input(z.object({
+  userId: z.string(),
+  profileId: z.string(),
+})).mutation(async ({ctx, input}) =>{
+
+  const unfollow = await ctx.prisma.following.deleteMany({
+    where:{
+      follower: input.userId,
+      followee: input.profileId
+    }
+  })
+
+  return unfollow;
+
 }),
 
 });

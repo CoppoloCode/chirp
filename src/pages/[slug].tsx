@@ -7,6 +7,8 @@ import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { LoadingPage } from "~/components/loading";
 import { useUser } from "@clerk/nextjs";
+import { useContext, useState } from "react";
+import { toast } from "react-hot-toast";
 
 
 
@@ -31,15 +33,61 @@ const ProfileFeed = (props: {userId: string}) => {
   </div>
 } 
 
-const ProfilePage: NextPage<{username: string}> = ({username}) => {
+const ProfilePage: NextPage <{username: string }> = ({username}) => {
 
-  const userId = useUser()?.user?.id;
-  if(!userId ) return null;
-  
-  const {data} = api.profile.getUserByUsername.useQuery({username, userId});
-  
-  if(!data) return <div className="flex flex-col w-full h-screen justify-center items-center">404</div>;
-  
+    const {user} = useUser();
+    let [isFollowing, setFollow] = useState(false);
+    const ctx = api.useContext();
+    const {data, isLoading: isDataLoading} = api.profile.getUserByUsername.useQuery({username, userId: user?.id ?? ""});
+    const followData = api.posts.validateFollow.useQuery({userId: user?.id ?? "", profileId: data?.id ?? ""}).data;
+
+    const {mutate: unfollow , isLoading: unfollowLoading} = api.posts.unfollow.useMutation({
+      onSuccess: async ()=>{
+        await ctx.posts.invalidate();
+      },
+      onError: (e)=>{
+        const errorMessage = e.data?.zodError?.fieldErrors.content;
+        if(errorMessage && errorMessage[0]){
+          toast.error(errorMessage[0]);
+        }else{
+          toast.error("Failed to unfollow. Try again later");
+        }
+      }
+  });
+
+  const {mutate: follow, isLoading: followLoading} = api.posts.follow.useMutation({
+    onSuccess: async ()=>{
+        await ctx.posts.invalidate();
+    },
+    onError: (e)=>{
+      const errorMessage = e.data?.zodError?.fieldErrors.content;
+      if(errorMessage && errorMessage[0]){
+        toast.error(errorMessage[0]);
+      }else{
+        toast.error("Failed to follow. Try again later");
+      }
+    }
+    
+  });
+
+    if(!user ) return null;
+    
+    if(followData && followData.length > 0){
+      isFollowing = true;
+    }
+    
+    
+    if(isDataLoading) return <LoadingPage/>;
+    
+    if(!data) return <div className="flex flex-col w-full h-screen justify-center items-center">404</div>;
+    
+
+    
+    let userName = user.username;
+    if(!userName) userName = user.firstName + " " + user.lastName;
+
+
+    
 
   return (
     <>
@@ -58,7 +106,11 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
             />
           </div>
           <div className="h-[64px]"></div>
-          <div className="p-4 text-2xl font-bold">{`@${data.username ?? ""}`}</div>
+          <div className="flex justify-between p-4 text-2xl font-bold">
+            {`@${data.username ?? ""}`}
+            {data.username !== userName && !isFollowing && <button disabled={followLoading || unfollowLoading} className="p-2 bg-slate-600 bg-opacity-10 transition duration-500 ease-in-out hover:bg-opacity-50 rounded-full" onClick={() => {setFollow(true);follow({userId: user.id, profileId: data.id})}}>Follow</button>}
+            {data.username !== userName && isFollowing && <button disabled={followLoading || unfollowLoading} className="text-black p-2 bg-slate-100 bg-opacity-100 transition duration-500 ease-in-out hover:bg-opacity-50 rounded-full hover:text-red-500 before:content-['Following'] hover:before:content-['Unfollow']" onClick={() => {setFollow(false); unfollow({userId: user.id, profileId: data.id})}}></button>}
+            </div>
           <div className="w-full border-b border-slate-400"></div>
           <ProfileFeed userId={data.id}/>
         </MainLayout>
@@ -73,16 +125,16 @@ const ProfilePage: NextPage<{username: string}> = ({username}) => {
 export const getStaticProps: GetStaticProps = async (context) =>{
 
   const ssg = generateSSGHelper();
- 
 
   const slug = context.params?.slug;
 
   if(typeof slug !== "string") throw new Error("no slug");
 
   const username = slug.replace("@", "");
-
-  await ssg.profile.getUserByUsername.prefetch({username, userId:""});
-
+  
+  
+  await ssg.profile.getUserByUsername.prefetch({username: username, userId: ""});
+  
   return {
     props:{
       trpcState: ssg.dehydrate(),

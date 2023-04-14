@@ -30,6 +30,7 @@ export const PostView = (props: PostWithUser) =>{
   if(props.isLiked){
     heartIcon = solidHeart;
   }
+  
   const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
       onSuccess: async ()=>{
         await ctx.posts.invalidate();

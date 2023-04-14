@@ -25,7 +25,14 @@ model PostsLiked{
 
   id String @id @default(cuid())
   authorId String
-  postId String @default(cuid())
+  postId String 
   
   @@index([authorId])
+}
+
+model Following{
+
+  id String @id @default(cuid())
+  follower String
+  followee String
 }
