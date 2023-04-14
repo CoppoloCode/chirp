@@ -81,7 +81,7 @@ export const PostView = (props: PostWithUser) =>{
           </div>
         </div>
         <div className="flex w-full justify-center">
-          <button className="flex items-center gap-2 hover:text-pink-500" disabled={likeLoading || unlikeLoading} onClick={() => {
+          <button className="flex items-center gap-2 hover:text-pink-500" disabled={likeLoading || unlikeLoading} onMouseOver={()=>setColor("rgb(244, 114, 182)")} onMouseLeave={()=>setColor("white")} onClick={() => {
           const {post} = props;
           if(heartIcon === solidHeart){ 
             setColor("white")
