@@ -27,9 +27,6 @@ export const PostView = (props: PostWithUser) =>{
 
   let [heartIcon, setIcon] = useState(regHeart);
 
-  if(props.isLiked){
-    heartIcon = solidHeart;
-  }
   
   const {mutate: unlikePost , isLoading: unlikeLoading} = api.posts.unlikePost.useMutation({
       onSuccess: async ()=>{
@@ -59,6 +56,11 @@ export const PostView = (props: PostWithUser) =>{
     }
     
   });
+  
+  if(props.isLiked){
+    heartIcon = solidHeart;
+  }
+  
 
 
     return (

@@ -70,7 +70,7 @@ const ProfilePage: NextPage <{username: string }> = ({username}) => {
     
   });
 
-    if(!user ) return null;
+    if(!user) return null;
     
     if(followData && followData.length > 0){
       isFollowing = true;
@@ -78,7 +78,7 @@ const ProfilePage: NextPage <{username: string }> = ({username}) => {
     
     
     if(isDataLoading) return <LoadingPage/>;
-    
+
     if(!data) return <div className="flex flex-col w-full h-screen justify-center items-center">404</div>;
     
 
