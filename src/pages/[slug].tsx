@@ -38,7 +38,7 @@ const ProfilePage: NextPage <{username: string }> = ({username}) => {
     const {user} = useUser();
     let [isFollowing, setFollow] = useState(false);
     const ctx = api.useContext();
-    const {data, isLoading: isDataLoading} = api.profile.getUserByUsername.useQuery({username, userId: user?.id ?? ""});
+    const {data, isLoading: isDataLoading} = api.profile.getUserByUsername.useQuery({username});
     const followData = api.posts.validateFollow.useQuery({userId: user?.id ?? "", profileId: data?.id ?? ""}).data;
 
     const {mutate: unfollow , isLoading: unfollowLoading} = api.posts.unfollow.useMutation({
@@ -130,10 +130,9 @@ export const getStaticProps: GetStaticProps = async (context) =>{
 
   if(typeof slug !== "string") throw new Error("no slug");
 
-  const username = slug.replace("@", "");
-  
-  
-  await ssg.profile.getUserByUsername.prefetch({username: username, userId: ""});
+  let username = slug.replace("@", "");
+
+  await ssg.profile.getUserByUsername.prefetch({username: username});
   
   return {
     props:{
