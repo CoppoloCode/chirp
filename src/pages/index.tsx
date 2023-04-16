@@ -104,7 +104,7 @@ const Home: NextPage = () => {
             <LeftView />
           </LeftLayout>
           <MainLayout>
-            <div className="flex border-b border-slate-400 p-4">
+            <div className="flex border-b border-slate-600 p-4">
               {isSignedIn && <CreatePostWizard/>}
             </div>
             {!isSignedIn && (

@@ -5,7 +5,7 @@ import { faPeopleGroup } from "@fortawesome/free-solid-svg-icons";
 export const MainLayout = (props: PropsWithChildren) => {
     return (
             <main className="flex w-screen md:w-1/3 h-screen">
-                <div className="h-full w-full overflow-y-scroll border-x border-slate-400">
+                <div className="h-full w-full overflow-y-scroll border-x border-slate-600">
                     {props.children}
                 </div>
             </main>
