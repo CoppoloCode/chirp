@@ -6,11 +6,10 @@ import { LeftView } from "~/components/leftview";
 import { api } from "~/utils/api";
 import { PostView } from "~/components/postview";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
-import { useUser } from "@clerk/nextjs";
+
 
 
 const SinglePostPage: NextPage<{id: string}> = ({id}) => {
-  const {isSignedIn} = useUser();
   const {data} = api.posts.getById.useQuery({
     id,
   });

@@ -1,15 +1,14 @@
 import type {RouterOutputs} from "~/utils/api";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart as regHeart} from '@fortawesome/free-regular-svg-icons';
+import {faHeart as solidHeart} from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
 import Image from "next/image";
-import Link from "next/link";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { faHeart as regHeart} from '@fortawesome/free-regular-svg-icons'
-import {faHeart as solidHeart} from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-
 
 
 dayjs.extend(relativeTime);
@@ -92,7 +91,8 @@ export const PostView = (props: PostWithUser) =>{
             setIcon(solidHeart);
             likePost({postId: post.id})
           }
-        }}><FontAwesomeIcon className="p-2 hover:bg-pink-400 hover:bg-opacity-40 rounded-full " color={heartColor} icon={heartIcon} />{props.post.likes}</button>        </div>
+        }}><FontAwesomeIcon className="p-2 hover:bg-pink-400 hover:bg-opacity-10 rounded-full" color={heartColor} icon={heartIcon} />{props.post.likes}</button>
+        </div>
       </div>
     )
   
